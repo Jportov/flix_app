@@ -1,6 +1,7 @@
 import streamlit as st
+from movies.service import MovieService
+import plotly.express as px
 
-# Page configuration
 st.set_page_config(
     page_title="Flix App",
     page_icon="🎬",
@@ -8,25 +9,31 @@ st.set_page_config(
 )
 
 def show_home():
-    # Header
-    st.title("🎬 Flix App")
-    st.subheader("Welcome to your ultimate movie hub!")
-
-    # Description
-    st.markdown("""
-    **Flix App** is your ultimate destination to discover, explore, and fall in love with movies.
+    movie_service = MovieService()
+    movie_stats = movie_service.get_movie_stats()
     
-    Here, you can:
-    - 🔍 Search for your favorite movies
-    - 🌟 View ratings and summaries
-    - 📺 Watch trailers
-    - 💾 Save movies to watch later
+    st.title("Movies stats")
+    
+    if len(movie_stats['movies_by_genre']) > 0:
+        st.subheader("Here's a quick overview of our movies by genre:")
+        fig = px.pie(
+            movie_stats['movies_by_genre'], 
+            names='genre__name', 
+            values='count', 
+            title='Movies by Genre'
+        )
 
-    Enjoy the cinema experience at home! 🍿
-    """)
+        st.plotly_chart(fig)
 
-    # Banner image
-    st.image("https://images.unsplash.com/photo-1581905764498-31c6d14bfac7?fit=crop&w=1200&q=80", use_container_width=True)
+        st.subheader("Here's a quick overview of our movie collection:")
+        st.write(movie_stats['total_movies'])
+
+        st.subheader("Here's a quick overview of our movies reviews collection:")
+        st.write(movie_stats['total_reviews'])
+        
+        st.subheader("Here's a quick overview of our stars on reviews")
+        st.write(movie_stats['total_stars'])
+
 
     # Upcoming features
     st.markdown("---")

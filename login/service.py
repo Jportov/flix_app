@@ -10,3 +10,10 @@ def login(username, password):
     else:
         st.session_state.token = response.get('access')
         st.rerun()
+
+def logout():
+    for key in st.session_state.keys():
+        del st.session_state[key]
+    st.rerun()
+    st.success("Logged out successfully.")
+

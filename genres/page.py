@@ -1,41 +1,33 @@
 import streamlit as st
 from st_aggrid import AgGrid
 import pandas as pd
+from genres.service import GenreService
 
 
-genres = [
-    { 
-        'id' : 1,
-        'name': 'Action'
-    },
-    { 
-        'id' : 2,
-        'name': 'Comedy'
-    },
-    { 
-        'id' : 3,
-        'name': 'Drama'
-    },
-    { 
-        'id' : 4,
-        'name': 'Horror'
-    },
-    { 
-        'id' : 5,
-        'name': 'Sci-Fi'
-    },
-]
 
 def show_genres():
-    st.subheader('Genres Page')
-
-    AgGrid(
-        data=pd.DataFrame(genres),
-        reload_data=True,
-        key='genres_grid'
-    )
-
+    genre_service = GenreService()
+    genres = genre_service.get_genres()
+    
+    if genres:
+        st.subheader('Genres Page')
+        genres_df = pd.json_normalize(genres)
+        AgGrid(
+            data=genres_df,
+            reload_data=True,
+            key='genres_grid'
+        )
+    else:
+        st.warning('No genres available.')
+        
     st.write('Create a new genre.')
     name = st.text_input('Genre Name')
     if st.button('Add Genre'):
-        st.success(f'Genre \'{name}\' added successfully!')
+        new_genre = genre_service.create_genre(
+            name=name,
+            )
+        if new_genre:
+            st.success(f'Genre \'{name}\' added successfully!')
+            st.rerun()
+        else:
+            st.error('Failed to add genre. Please try again.')

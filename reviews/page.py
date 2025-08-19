@@ -1,41 +1,48 @@
 import streamlit as st
 from st_aggrid import AgGrid
 import pandas as pd
+from reviews.service import ReviewService
+from movies.service import MovieService
 
-
-reviews = [
-    { 
-        'id' : 1,
-        'name': 'Purge'
-    },
-    { 
-        'id' : 2,
-        'name': 'The Conjuring'
-    },
-    { 
-        'id' : 3,
-        'name': 'Inception'
-    },
-    { 
-        'id' : 4,
-        'name': 'Avatar'
-    },
-    { 
-        'id' : 5,
-        'name': 'Interstellar'
-    },
-]
 
 def show_reviews():
-    st.subheader('Reviews Page')
-
-    AgGrid(
-        data=pd.DataFrame(reviews),
-        reload_data=True,
-        key='reviews_grid'
+    review_service = ReviewService()
+    reviews = review_service.get_reviews()
+    
+    if reviews:
+        st.subheader('Reviews Page')
+        reviews_df = pd.json_normalize(reviews)
+        AgGrid(
+            data=reviews_df,
+            reload_data=True,
+            key='reviews_grid'
+        )
+    else:
+        st.write('No reviews available.')
+        
+    st.subheader('Add a Review')
+    
+    movie_service = MovieService()
+    movies = movie_service.get_movies()
+    movie_titles = {movie['title']: movie['title'] for movie in movies}
+    selected_movie_title = st.selectbox('Movie', list(movie_titles.keys()))
+    
+    stars = st.number_input(
+        label='Stars',
+        min_value=1,
+        max_value=5,
+        step=1,
     )
-
-    st.write('Create a new review.')
-    name = st.text_input('Review Name')
+    comment = st.text_area(
+        label='Comment')
     if st.button('Add Review'):
-        st.success(f'Review \'{name}\' added successfully!')
+        new_review = review_service.create_review(
+            movie=movie_titles[selected_movie_title],
+            comment=comment,
+            stars=stars
+        )
+        if new_review:
+            st.rerun()
+            st.success(f'Review for \'{selected_movie_title}\' added successfully!')
+        else:
+            st.error('Failed to add review.')
