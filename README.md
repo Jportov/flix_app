@@ -1,6 +1,6 @@
 # Flix App
 
-Flix App é uma aplicação web desenvolvida com **Streamlit** para gerenciar dados de filmes, incluindo **gêneros**, **atores/atrizes** e **filmes**. O projeto também inclui a **API de filmes**, totalmente desenvolvida pelo autor, que fornece os dados consumidos pela aplicação. As tabelas interativas utilizam **AgGrid** e permitem cadastro e edição de itens em tempo real.
+Flix App é uma aplicação web desenvolvida com Streamlit para gerenciar dados de filmes, incluindo gêneros, atores/atrizes e filmes O projeto também inclui a API de filmes, totalmente desenvolvida por mim, que fornece os dados consumidos pela aplicação. As tabelas interativas utilizam AgGrid e permitem cadastro e edição de itens em tempo real.
 
 ## Funcionalidades
 
