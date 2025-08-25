@@ -5,6 +5,17 @@ from reviews.service import ReviewService
 from st_aggrid import AgGrid, ExcelExportMode
 
 
+def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Converte tudo que não for string, número ou boolean em string,
+    para evitar problemas de serialização no AgGrid.
+    """
+    for col in df.columns:
+        if not pd.api.types.is_numeric_dtype(df[col]) and not pd.api.types.is_bool_dtype(df[col]):
+            df[col] = df[col].apply(lambda x: str(x) if not pd.isnull(x) else '')
+    return df
+
+
 def show_reviews():
     review_service = ReviewService()
     reviews = review_service.get_reviews()
@@ -12,6 +23,7 @@ def show_reviews():
     if reviews:
         st.write('Lista de Avaliações:')
         reviews_df = pd.json_normalize(reviews)
+        reviews_df = clean_for_aggrid(reviews_df)
         AgGrid(
             data=reviews_df,
             reload_data=True,

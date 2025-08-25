@@ -7,6 +7,17 @@ from movies.service import MovieService
 from st_aggrid import AgGrid, ExcelExportMode
 
 
+def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Converte tudo que não for string, número ou boolean em string,
+    para evitar problemas de serialização no AgGrid.
+    """
+    for col in df.columns:
+        if not pd.api.types.is_numeric_dtype(df[col]) and not pd.api.types.is_bool_dtype(df[col]):
+            df[col] = df[col].apply(lambda x: str(x) if not pd.isnull(x) else '')
+    return df
+
+
 def show_movies():
     movie_service = MovieService()
     movies = movie_service.get_movies()
@@ -16,6 +27,7 @@ def show_movies():
 
         movies_df = pd.json_normalize(movies)
         movies_df = movies_df.drop(columns=['actors', 'genre.id'])
+        movies_df = clean_for_aggrid(movies_df)
 
         AgGrid(
             data=movies_df,

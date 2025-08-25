@@ -5,6 +5,17 @@ from st_aggrid import AgGrid, ExcelExportMode
 from actors.service import ActorService
 
 
+def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Converte tudo que não for string, número ou boolean em string,
+    para evitar problemas de serialização no AgGrid.
+    """
+    for col in df.columns:
+        if not pd.api.types.is_numeric_dtype(df[col]) and not pd.api.types.is_bool_dtype(df[col]):
+            df[col] = df[col].apply(lambda x: str(x) if not pd.isnull(x) else '')
+    return df
+
+
 def show_actors():
     actor_service = ActorService()
     actors = actor_service.get_actors()
@@ -12,6 +23,7 @@ def show_actors():
     if actors:
         st.write('Lista de Atores/Atrizes:')
         actors_df = pd.json_normalize(actors)
+        actors_df = clean_for_aggrid(actors_df)
         AgGrid(
             data=actors_df,
             reload_data=True,
