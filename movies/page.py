@@ -42,7 +42,7 @@ def show_movies():
     selected_actors_names = st.multiselect('Atores/Atrizes', list(actor_names.keys()))
     selected_actors_ids = [actor_names[name] for name in selected_actors_names]
     resume = st.text_area('Resumo')
-    if st.button('Cadastrar'):
+    if st.button('Cadastrar', key='btn_add_movie'):
         if title.strip() == "":
             st.error("O título não pode ficar vazio!")
         else:
@@ -60,7 +60,10 @@ def show_movies():
                 st.error('Erro ao cadastrar o filme. Verifique os campos')
 
     # --- Lista de filmes ---
-    movies = movie_service.get_movies()
+    if 'movies' not in st.session_state:
+        st.session_state.movies = movie_service.get_movies()
+    movies = st.session_state.movies
+
     if movies:
         st.write('Lista de Filmes:')
         movies_df = pd.json_normalize(movies)
@@ -85,7 +88,7 @@ def show_movies():
             st.subheader(f"Editar Filme: {selected_movie['title']}")
             new_title = st.text_input('Novo título', value=selected_movie['title'], key='edit_movie_title')
             # Adicione campos para editar outros atributos se desejar
-            if st.button('Salvar edição'):
+            if st.button('Salvar edição', key='btn_edit_movie'):
                 # Implemente aqui a chamada para editar o filme via service/repository se disponível
                 st.session_state.movies = movie_service.get_movies()
                 st.rerun()

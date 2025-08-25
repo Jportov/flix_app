@@ -18,19 +18,23 @@ def show_genres():
     # --- Formulário de cadastro ---
     st.subheader('Cadastrar Novo Gênero')
     name = st.text_input('Nome do Gênero')
-    if st.button('Cadastrar'):
+    if st.button('Cadastrar', key='btn_add_genre'):
         if name.strip() == "":
             st.error("O nome do gênero não pode ficar vazio!")
         else:
             new_genre = genre_service.create_genre(name=name)
             if new_genre:
                 st.success(f"Gênero '{name}' cadastrado com sucesso!")
-                st.rerun()  # força atualização da página
+                st.session_state.genres = genre_service.get_genres()
+                st.rerun()
             else:
                 st.error("Erro ao cadastrar o gênero. Verifique os campos.")
 
     # --- Lista de gêneros ---
-    genres = genre_service.get_genres()
+    if 'genres' not in st.session_state:
+        st.session_state.genres = genre_service.get_genres()
+    genres = st.session_state.genres
+
     if genres:
         st.write('Lista de Gêneros:')
         genres_df = pd.json_normalize(genres)
@@ -55,10 +59,11 @@ def show_genres():
             selected_genre = selected[0]
             st.subheader(f"Editar Gênero: {selected_genre['name']}")
             new_name = st.text_input('Novo nome', value=selected_genre['name'], key='edit_genre_name')
-            if st.button('Salvar edição'):
+            if st.button('Salvar edição', key='btn_edit_genre'):
                 # Implemente aqui a chamada para editar o gênero via service/repository se disponível
                 # Exemplo: genre_service.edit_genre(selected_genre['id'], new_name)
                 st.success(f"Gênero atualizado para '{new_name}'")
+                st.session_state.genres = genre_service.get_genres()
                 st.rerun()
     else:
         st.warning('Nenhum gênero encontrado.')

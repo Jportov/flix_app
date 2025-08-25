@@ -35,7 +35,7 @@ def show_actors():
         label='Nacionalidade',
         options=nationality_dropdown,
     )
-    if st.button('Cadastrar'):
+    if st.button('Cadastrar', key='btn_add_actor'):
         if name.strip() == "":
             st.error("O nome não pode ficar vazio!")
         else:
@@ -46,12 +46,16 @@ def show_actors():
             )
             if new_actor:
                 st.success(f"Ator/Atriz '{name}' cadastrado(a) com sucesso!")
+                st.session_state.actors = actor_service.get_actors()
                 st.rerun()
             else:
                 st.error('Erro ao cadastrar o(a) Ator/Atriz. Verifique os campos')
 
     # --- Lista de atores ---
-    actors = actor_service.get_actors()
+    if 'actors' not in st.session_state:
+        st.session_state.actors = actor_service.get_actors()
+    actors = st.session_state.actors
+
     if actors:
         st.write('Lista de Atores/Atrizes:')
         actors_df = pd.json_normalize(actors)
@@ -75,9 +79,10 @@ def show_actors():
             st.subheader(f"Editar Ator/Atriz: {selected_actor['name']}")
             new_name = st.text_input('Novo nome', value=selected_actor['name'], key='edit_actor_name')
             # Adicione campos para editar birthday/nationality se desejar
-            if st.button('Salvar edição'):
+            if st.button('Salvar edição', key='btn_edit_actor'):
                 # Implemente aqui a chamada para editar o ator via service/repository se disponível
                 st.success(f"Ator/Atriz atualizado(a) para '{new_name}'")
+                st.session_state.actors = actor_service.get_actors()
                 st.rerun()
     else:
         st.warning('Nenhum Ator/Atriz encontrado.')

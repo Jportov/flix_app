@@ -21,7 +21,10 @@ def show_reviews():
     st.title('Avaliações')
 
     # --- Lista de avaliações ---
-    reviews = review_service.get_reviews()
+    if 'reviews' not in st.session_state:
+        st.session_state.reviews = review_service.get_reviews()
+    reviews = st.session_state.reviews
+
     if reviews:
         st.write('Lista de Avaliações:')
         reviews_df = pd.json_normalize(reviews)
@@ -45,9 +48,10 @@ def show_reviews():
             st.subheader(f"Editar Avaliação do Filme: {selected_review['movie']}")
             new_comment = st.text_area('Novo comentário', value=selected_review['comment'], key='edit_review_comment')
             # Adicione campos para editar estrelas ou filme se desejar
-            if st.button('Salvar edição'):
+            if st.button('Salvar edição', key='btn_edit_review'):
                 # Implemente aqui a chamada para editar a avaliação via service/repository se disponível
                 st.success("Avaliação atualizada!")
+                st.session_state.reviews = review_service.get_reviews()
                 st.rerun()
     else:
         st.warning('Nenhuma avaliação encontrada.')
@@ -65,7 +69,7 @@ def show_reviews():
         step=1,
     )
     comment = st.text_area(label='Comentário')
-    if st.button('Cadastrar Nova'):
+    if st.button('Cadastrar Nova', key='btn_add_review'):
         new_review = review_service.create_review(
             movie=movie_titles[selected_movie_title],
             stars=stars,
@@ -73,6 +77,7 @@ def show_reviews():
         )
         if new_review:
             st.success("Avaliação cadastrada com sucesso!")
+            st.session_state.reviews = review_service.get_reviews()
             st.rerun()
         else:
             st.error('Erro ao cadastrar a avaliação. Verifique os campos')
