@@ -1,40 +1,38 @@
-import streamlit as st 
-from genres.page import show_genres
+import streamlit as st
 from actors.page import show_actors
+from genres.page import show_genres
+from home.page import show_home
+from login.page import show_login
 from movies.page import show_movies
 from reviews.page import show_reviews
-from home.page import show_home
-from about.page import show_about
-from login.page import show_login
 
 
 def main():
     if 'token' not in st.session_state:
         show_login()
     else:
-        
-        menu_options = st.sidebar.selectbox(
+        st.title('Flix App')
+
+        menu_option = st.sidebar.selectbox(
             'Selecione uma opção',
-            ['Home', 'Genres', 'Movies', 'Reviews','Actors/Actress', 'About'])
-        
-        if menu_options == 'Home':
+            ['Início', 'Gêneros', 'Atores/Atrizes', 'Filmes', 'Avaliações']
+        )
+
+        if menu_option == 'Início':
             show_home()
-            
-        if menu_options == 'Genres':
+
+        if menu_option == 'Gêneros':
             show_genres()
-            
-        if menu_options == 'Movies':
+
+        if menu_option == 'Atores/Atrizes':
+            show_actors()
+
+        if menu_option == 'Filmes':
             show_movies()
 
-        if menu_options == 'Reviews':
+        if menu_option == 'Avaliações':
             show_reviews()
-            
-        if menu_options == 'Actors/Actress':
-            show_actors()
-            
-        if menu_options == 'About':
-            show_about()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 import requests
 
+
 class Auth:
 
     def __init__(self):
@@ -8,8 +9,8 @@ class Auth:
 
     def get_token(self, username, password):
         auth_payload = {
-            "username": username,
-            "password": password
+            'username': username,
+            'password': password
         }
         auth_response = requests.post(
             self.__auth_url,
@@ -17,4 +18,4 @@ class Auth:
         )
         if auth_response.status_code == 200:
             return auth_response.json()
-        return {'error': f'Failed to obtain token: {auth_response.status_code}'}
+        return {'error': f'Erro ao autenticar. Status code: {auth_response.status_code}'}

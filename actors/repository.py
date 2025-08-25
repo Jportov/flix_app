@@ -1,10 +1,10 @@
 import requests
-import streamlit as st 
+import streamlit as st
 from login.service import logout
 
 
 class ActorRepository:
-    
+
     def __init__(self):
         self.__base_url = 'https://portodevs.pythonanywhere.com/api/v1/'
         self.__actors_url = f'{self.__base_url}actors/'
@@ -21,8 +21,8 @@ class ActorRepository:
             return response.json()
         if response.status_code == 401:
             logout()
-            st.error("Unauthorized access. Please log in again.")
-        raise Exception(f'Failed to obtain API data. Status code: {response.status_code}, Response: {response.text}')
+            return None
+        raise Exception(f'Erro ao obter dados da API. Status code: {response.status_code}')
 
     def create_actor(self, actor):
         response = requests.post(
@@ -34,6 +34,5 @@ class ActorRepository:
             return response.json()
         if response.status_code == 401:
             logout()
-            st.error("Unauthorized access. Please log in again.")
-            st.session_state.pop('token', None)
-        raise Exception(f'Failed to create actor. Status code: {response.status_code}, Response: {response.text}')
+            return None
+        raise Exception(f'Erro ao cadastrar dados na API. Status code: {response.status_code}')
