@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 from genres.service import GenreService
-from st_aggrid import AgGrid, ExcelExportMode
+from st_aggrid import AgGrid
 
 
 def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
@@ -30,7 +30,6 @@ def show_genres():
             enableSorting=True,
             enableFilter=True,
             enableColResize=True,
-            excel_export_mode=ExcelExportMode.MANUAL,
             key='genres_grid',
         )
     else:

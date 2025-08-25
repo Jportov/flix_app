@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from st_aggrid import AgGrid, ExcelExportMode
+from st_aggrid import AgGrid
 from actors.service import ActorService
 
 
@@ -31,7 +31,6 @@ def show_actors():
             enableSorting=True,
             enableFilter=True,
             enableColResize=True,
-            excel_export_mode=ExcelExportMode.MANUAL,
             key='actors_grid',
         )
     else:

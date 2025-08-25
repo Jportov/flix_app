@@ -4,7 +4,7 @@ import streamlit as st
 from genres.service import GenreService
 from actors.service import ActorService
 from movies.service import MovieService
-from st_aggrid import AgGrid, ExcelExportMode
+from st_aggrid import AgGrid
 
 
 def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
@@ -36,7 +36,6 @@ def show_movies():
             enableSorting=True,
             enableFilter=True,
             enableColResize=True,
-            excel_export_mode=ExcelExportMode.MANUAL,
             key='movies_grid',
         )
     else:
