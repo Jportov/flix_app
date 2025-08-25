@@ -25,7 +25,7 @@ def show_genres():
             new_genre = genre_service.create_genre(name=name)
             if new_genre:
                 st.success(f"Gênero '{name}' cadastrado com sucesso!")
-                st.experimental_rerun()  # força atualização da página
+                st.rerun()  # força atualização da página
             else:
                 st.error("Erro ao cadastrar o gênero. Verifique os campos.")
 

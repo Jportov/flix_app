@@ -54,8 +54,8 @@ def show_movies():
                 resume=resume,
             )
             if new_movie:
-                st.success(f"Filme '{title}' cadastrado com sucesso!")
-                st.experimental_rerun()
+                st.session_state.movies = movie_service.get_movies()
+                st.rerun()
             else:
                 st.error('Erro ao cadastrar o filme. Verifique os campos')
 
@@ -87,7 +87,7 @@ def show_movies():
             # Adicione campos para editar outros atributos se desejar
             if st.button('Salvar edição'):
                 # Implemente aqui a chamada para editar o filme via service/repository se disponível
-                st.success(f"Filme atualizado para '{new_title}'")
-                st.experimental_rerun()
+                st.session_state.movies = movie_service.get_movies()
+                st.rerun()
     else:
         st.warning('Nenhum filme encontrado.')
