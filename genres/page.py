@@ -26,7 +26,7 @@ def show_genres():
             if new_genre:
                 st.success(f"Gênero '{name}' cadastrado com sucesso!")
                 st.session_state.genres = genre_service.get_genres()
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error("Erro ao cadastrar o gênero. Verifique os campos.")
 
@@ -64,6 +64,6 @@ def show_genres():
                 # Exemplo: genre_service.edit_genre(selected_genre['id'], new_name)
                 st.success(f"Gênero atualizado para '{new_name}'")
                 st.session_state.genres = genre_service.get_genres()
-                st.rerun()
+                st.experimental_rerun()
     else:
         st.warning('Nenhum gênero encontrado.')

@@ -47,7 +47,7 @@ def show_actors():
             if new_actor:
                 st.success(f"Ator/Atriz '{name}' cadastrado(a) com sucesso!")
                 st.session_state.actors = actor_service.get_actors()
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error('Erro ao cadastrar o(a) Ator/Atriz. Verifique os campos')
 
@@ -83,6 +83,6 @@ def show_actors():
                 # Implemente aqui a chamada para editar o ator via service/repository se disponível
                 st.success(f"Ator/Atriz atualizado(a) para '{new_name}'")
                 st.session_state.actors = actor_service.get_actors()
-                st.rerun()
+                st.experimental_rerun()
     else:
         st.warning('Nenhum Ator/Atriz encontrado.')

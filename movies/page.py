@@ -55,7 +55,7 @@ def show_movies():
             )
             if new_movie:
                 st.session_state.movies = movie_service.get_movies()
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error('Erro ao cadastrar o filme. Verifique os campos')
 
@@ -91,6 +91,6 @@ def show_movies():
             if st.button('Salvar edição', key='btn_edit_movie'):
                 # Implemente aqui a chamada para editar o filme via service/repository se disponível
                 st.session_state.movies = movie_service.get_movies()
-                st.rerun()
+                st.experimental_rerun()
     else:
         st.warning('Nenhum filme encontrado.')
