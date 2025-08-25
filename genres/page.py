@@ -13,10 +13,10 @@ def show_genres():
         # Normaliza a lista de dicionários em DataFrame
         genres_df = pd.json_normalize(genres)
 
-        # Converte colunas que podem ser problemáticas para string
+        # Garantir que tudo seja JSON serializável
         for col in genres_df.columns:
             genres_df[col] = genres_df[col].apply(
-                lambda x: str(x) if callable(x) or not isinstance(x, (int, float, str, bool, type(None))) else x
+                lambda x: x if isinstance(x, (int, float, str, bool, type(None))) else str(x)
             )
 
         # Exibe a tabela no AgGrid
