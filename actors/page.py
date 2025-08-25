@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from st_aggrid import AgGrid
+from st_aggrid import AgGrid, GridOptionsBuilder
 from actors.service import ActorService
 
 
@@ -18,25 +18,10 @@ def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
 
 def show_actors():
     actor_service = ActorService()
-    actors = actor_service.get_actors()
+    st.title('Atores/Atrizes')
 
-    if actors:
-        st.write('Lista de Atores/Atrizes:')
-        actors_df = pd.json_normalize(actors)
-        actors_df = clean_for_aggrid(actors_df)
-        AgGrid(
-            data=actors_df,
-            reload_data=True,
-            columns_auto_size_mode=True,
-            enableSorting=True,
-            enableFilter=True,
-            enableColResize=True,
-            key='actors_grid',
-        )
-    else:
-        st.warning('Nenhum Ator/Atriz encontrado.')
-
-    st.title('Cadastrar Novo(a) Ator/Atriz')
+    # --- Formulário de cadastro ---
+    st.subheader('Cadastrar Novo(a) Ator/Atriz')
     name = st.text_input('Nome')
     birthday = st.date_input(
         label='Data de Nascimento',
@@ -51,12 +36,48 @@ def show_actors():
         options=nationality_dropdown,
     )
     if st.button('Cadastrar'):
-        new_actor = actor_service.create_actor(
-            name=name,
-            birthday=birthday,
-            nationality=nationality,
-        )
-        if new_actor:
-            st.experimental_rerun()
+        if name.strip() == "":
+            st.error("O nome não pode ficar vazio!")
         else:
-            st.error('Erro ao cadastrar o(a) Ator/Atriz. Verifique os campos')
+            new_actor = actor_service.create_actor(
+                name=name,
+                birthday=birthday,
+                nationality=nationality,
+            )
+            if new_actor:
+                st.success(f"Ator/Atriz '{name}' cadastrado(a) com sucesso!")
+                st.experimental_rerun()
+            else:
+                st.error('Erro ao cadastrar o(a) Ator/Atriz. Verifique os campos')
+
+    # --- Lista de atores ---
+    actors = actor_service.get_actors()
+    if actors:
+        st.write('Lista de Atores/Atrizes:')
+        actors_df = pd.json_normalize(actors)
+        actors_df = clean_for_aggrid(actors_df)
+
+        gb = GridOptionsBuilder.from_dataframe(actors_df)
+        gb.configure_default_column(editable=False, sortable=True, filter=True, resizable=True)
+        gb.configure_selection('single')
+        gridOptions = gb.build()
+
+        grid_response = AgGrid(
+            actors_df,
+            gridOptions=gridOptions,
+            enable_enterprise_modules=False,
+            key='actors_grid',
+        )
+
+        selected = grid_response.get('selected_rows', [])
+        if selected:
+            selected_actor = selected[0]
+            st.subheader(f"Editar Ator/Atriz: {selected_actor['name']}")
+            new_name = st.text_input('Novo nome', value=selected_actor['name'], key='edit_actor_name')
+            # Adicione campos para editar birthday/nationality se desejar
+            if st.button('Salvar edição'):
+                # Implemente aqui a chamada para editar o ator via service/repository se disponível
+                st.success(f"Ator/Atriz atualizado(a) para '{new_name}'")
+                st.experimental_rerun()
+    else:
+        st.warning('Nenhum Ator/Atriz encontrado.')

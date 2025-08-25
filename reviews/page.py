@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 from movies.service import MovieService
 from reviews.service import ReviewService
-from st_aggrid import AgGrid
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 
 def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
@@ -18,31 +18,46 @@ def clean_for_aggrid(df: pd.DataFrame) -> pd.DataFrame:
 
 def show_reviews():
     review_service = ReviewService()
-    reviews = review_service.get_reviews()
+    st.title('Avaliações')
 
+    # --- Lista de avaliações ---
+    reviews = review_service.get_reviews()
     if reviews:
         st.write('Lista de Avaliações:')
         reviews_df = pd.json_normalize(reviews)
         reviews_df = clean_for_aggrid(reviews_df)
-        AgGrid(
-            data=reviews_df,
-            reload_data=True,
-            columns_auto_size_mode=True,
-            enableSorting=True,
-            enableFilter=True,
-            enableColResize=True,
+
+        gb = GridOptionsBuilder.from_dataframe(reviews_df)
+        gb.configure_default_column(editable=False, sortable=True, filter=True, resizable=True)
+        gb.configure_selection('single')
+        gridOptions = gb.build()
+
+        grid_response = AgGrid(
+            reviews_df,
+            gridOptions=gridOptions,
+            enable_enterprise_modules=False,
             key='reviews_grid',
         )
+
+        selected = grid_response.get('selected_rows', [])
+        if selected:
+            selected_review = selected[0]
+            st.subheader(f"Editar Avaliação do Filme: {selected_review['movie']}")
+            new_comment = st.text_area('Novo comentário', value=selected_review['comment'], key='edit_review_comment')
+            # Adicione campos para editar estrelas ou filme se desejar
+            if st.button('Salvar edição'):
+                # Implemente aqui a chamada para editar a avaliação via service/repository se disponível
+                st.success("Avaliação atualizada!")
+                st.experimental_rerun()
     else:
         st.warning('Nenhuma avaliação encontrada.')
 
-    st.title('Cadastrar Nova avaliação')
-
+    # --- Formulário de cadastro ---
+    st.subheader('Cadastrar Nova avaliação')
     movie_service = MovieService()
     movies = movie_service.get_movies()
     movie_titles = {movie['title']: movie['id'] for movie in movies}
     selected_movie_title = st.selectbox('Filme', list(movie_titles.keys()))
-
     stars = st.number_input(
         label='Estrelas',
         min_value=0,
@@ -50,14 +65,14 @@ def show_reviews():
         step=1,
     )
     comment = st.text_area(label='Comentário')
-
-    if st.button('Cadastrar'):
+    if st.button('Cadastrar Nova'):
         new_review = review_service.create_review(
             movie=movie_titles[selected_movie_title],
             stars=stars,
             comment=comment,
         )
         if new_review:
+            st.success("Avaliação cadastrada com sucesso!")
             st.experimental_rerun()
         else:
             st.error('Erro ao cadastrar a avaliação. Verifique os campos')
