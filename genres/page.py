@@ -59,6 +59,6 @@ def show_genres():
                 # Implemente aqui a chamada para editar o gênero via service/repository se disponível
                 # Exemplo: genre_service.edit_genre(selected_genre['id'], new_name)
                 st.success(f"Gênero atualizado para '{new_name}'")
-                st.experimental_rerun()
+                st.rerun()
     else:
         st.warning('Nenhum gênero encontrado.')

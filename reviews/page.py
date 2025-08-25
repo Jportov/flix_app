@@ -48,7 +48,7 @@ def show_reviews():
             if st.button('Salvar edição'):
                 # Implemente aqui a chamada para editar a avaliação via service/repository se disponível
                 st.success("Avaliação atualizada!")
-                st.experimental_rerun()
+                st.rerun()
     else:
         st.warning('Nenhuma avaliação encontrada.')
 
@@ -73,6 +73,6 @@ def show_reviews():
         )
         if new_review:
             st.success("Avaliação cadastrada com sucesso!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error('Erro ao cadastrar a avaliação. Verifique os campos')
