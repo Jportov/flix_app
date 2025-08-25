@@ -47,6 +47,6 @@ def show_reviews():
             comment=comment,
         )
         if new_review:
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error('Erro ao cadastrar a avaliação. Verifique os campos')

@@ -46,6 +46,6 @@ def show_actors():
             nationality=nationality,
         )
         if new_actor:
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error('Erro ao cadastrar o(a) Ator/Atriz. Verifique os campos')

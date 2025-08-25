@@ -1,4 +1,3 @@
-
 import streamlit as st
 from actors.repository import ActorRepository
 
@@ -23,4 +22,5 @@ class ActorService:
         )
         new_actor = self.actor_repository.create_actor(actor)
         st.session_state.actors.append(new_actor)
+        return new_actor
         return new_actor

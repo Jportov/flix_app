@@ -64,6 +64,6 @@ def show_movies():
             resume=resume,
         )
         if new_movie:
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error('Erro ao cadastrar o filme. Verifique os campos')
